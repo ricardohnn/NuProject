@@ -1,9 +1,10 @@
 # NuProject
 
-I will update the README with some thoughts about implementation which i could have used but i didn't (for n-reasons) to use
-and links related.
+I will update the README with some thoughts about implementation which i could have used but i didn't (for n-reasons) use and
+also some links.
 
-1-The Http/json consumer
+1 - The Http/json request consumer
+
 Ok, I won't talk about http and asyncs, but i will discard robospice since volley can basically do the same.
 But on the meantime, some new names came up "okHttp" and "retrofit". Retrofit seems to be faster than volley (which i rather
 prefer and the one i will use, since it is maintained by Google - high five to that):
