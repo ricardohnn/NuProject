@@ -5,6 +5,12 @@ also some links.
 
 1 - The Http/json request consumer
 
+How to test a request before really implementing it?
+
+https://chrome.google.com/webstore/detail/postman/fhbjgbiflinjbdggehcddcbncdddomop?hl=en
+
+I really enjoy this plugin, it makes the "first glance" of the problems a little bit easier (at least for me).
+
 Ok, I won't talk about http and asyncs, but i will discard robospice since volley can basically do the same.
 But on the meantime, some new names came up "okHttp" and "retrofit". Retrofit seems to be faster than volley (which i rather
 prefer and the one i will use, since it is maintained by Google - high five to that):
@@ -30,6 +36,6 @@ Just some old thought that came to my mind right now, when i was doing an applic
 something about flatbuffers, which i added the following remark:
 
 http://frogermcs.github.io/json-parsing-with-flatbuffers-in-android/
-"sounds interesting but won't be checking it right now, but good for performance improvement 
-(maybe changing from json to flatbuffers would be good in server side also)
+"sounds interesting but won't be checking it right now, but good for performance improvement
+(maybe changing from json to flatbuffers would be good in server side also)".
 
