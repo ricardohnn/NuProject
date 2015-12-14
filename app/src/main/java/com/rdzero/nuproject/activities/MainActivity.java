@@ -30,7 +30,6 @@ import android.support.v4.view.ViewPager;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.style.ForegroundColorSpan;
-import android.text.style.ImageSpan;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -67,7 +66,7 @@ public class MainActivity extends FragmentActivity {
         mDemoCollectionPagerAdapter = new DemoCollectionPagerAdapter(getSupportFragmentManager());
 
         // Set up action bar.
-        final ActionBar actionBar = getActionBar();
+        //final ActionBar actionBar = getActionBar();
 
         // Specify that the Home button should show an "Up" caret, indicating that touching the
         // button will take the user one step up in the application's hierarchy.
@@ -80,12 +79,13 @@ public class MainActivity extends FragmentActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        //TODO maybe some other time...
         switch (item.getItemId()) {
             case android.R.id.home:
                 // This is called when the Home (Up) button is pressed in the action bar.
                 // Create a simple intent that starts the hierarchical parent activity and
                 // use NavUtils in the Support Package to ensure proper handling of Up.
-                Intent upIntent = new Intent(this, MainActivityold.class);
+                Intent upIntent = new Intent(this, SplashScreenActivity.class);
                 if (NavUtils.shouldUpRecreateTask(this, upIntent)) {
                     // This activity is not part of the application's task, so create a new task
                     // with a synthesized back stack.
@@ -142,14 +142,8 @@ public class MainActivity extends FragmentActivity {
             if (mViewPager.getCurrentItem() > pos) {
                 ss.setSpan(new ForegroundColorSpan(Color.BLACK), 1, 4, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             }
-            else {
-
-            }
             if (mViewPager.getCurrentItem() < pos) {
                 ss.setSpan(new ForegroundColorSpan(Color.BLACK), 0, 3, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-            }
-            else {
-
             }
             return ss;
         }

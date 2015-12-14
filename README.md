@@ -1,7 +1,7 @@
 # NuProject
 
 I will update the README with some thoughts about implementation which i could have used but i didn't (for n-reasons) use and
-also some links.
+also some _links.
 
 1 - The Http/json request consumer
 
@@ -62,3 +62,19 @@ Using apktool, it seems that i have found about it in activity_bill_detail.xml:
 
 Well, we will keep it simple (which means i will focus on treating the logics first).
 
+3 - The parsing
+
+Now that's a huge parsing, I am kinda glad to use volley right now, since getting all these in the first screen would be the best to do
+(I think...).
+
+This seems really an interesting link:
+
+http://www.javacreed.com/gson-deserialiser-example/
+
+Maybe i will read it if i have a free time.
+I am able to retrieve the json, but href gives me a null pointer. Although it is correct, something seems fishy.
+
+Geez, i just realized that not all the fields are required, so rather than returning null, they do not keep the json stable, therefore the
+fields can/will change (facepalm).
+I need to make a check on which fields are required, right now, i am able to parse everything and show it in a scrollview, so...
+getting/parsing the json is finished, just missing some details.
