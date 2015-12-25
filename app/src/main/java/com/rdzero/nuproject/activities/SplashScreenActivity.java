@@ -1,9 +1,9 @@
 package com.rdzero.nuproject.activities;
 
 import android.app.Activity;
-import android.net.Uri;
+import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
+import android.os.Parcelable;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -12,10 +12,11 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.google.gson.FieldNamingPolicy;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.rdzero.nuproject.R;
+import com.rdzero.nuproject.beans.NuBillObj;
+import com.rdzero.nuproject.beans.NuLineItemsObjBean;
 import com.rdzero.nuproject.net.CustomJSONArrayRequest;
 import com.rdzero.nuproject.net.CustomVolleyRequestQueue;
 
@@ -123,18 +124,18 @@ public class SplashScreenActivity extends Activity implements Response.Listener,
             String boleto_emailHref;
             String barcodeHref;
 
-            if(post.getBill().get_links().getSelf() != null)
-                selfHref = post.getBill().get_links().getSelf().getHref();
+            if(post.getBill().getLinks().getSelf() != null)
+                selfHref = post.getBill().getLinks().getSelf().getHref();
             else
                 selfHref = "";
 
-            if(post.getBill().get_links().getBoleto_email() != null)
-                boleto_emailHref = post.getBill().get_links().getBoleto_email().getHref();
+            if(post.getBill().getLinks().getBoletoEmail() != null)
+                boleto_emailHref = post.getBill().getLinks().getBoletoEmail().getHref();
             else
                 boleto_emailHref = "";
 
-            if(post.getBill().get_links().getBarcode() != null)
-                barcodeHref = post.getBill().get_links().getBarcode().getHref();
+            if(post.getBill().getLinks().getBarcode() != null)
+                barcodeHref = post.getBill().getLinks().getBarcode().getHref();
             else
                 barcodeHref = "";
 
@@ -143,15 +144,15 @@ public class SplashScreenActivity extends Activity implements Response.Listener,
                             "\tstate: " + post.getBill().getState() + "\n" +
                             "\tid: " + post.getBill().getId() + "\n" +
                             "\tsummary:\n" +
-                            "\t\tdue_date: " + android.text.format.DateFormat.format("yyyy-MM-dd", post.getBill().getSummary().getDue_date()) + "\n" +
-                            "\t\tclose_date: " + android.text.format.DateFormat.format("yyyy-MM-dd", post.getBill().getSummary().getClose_date()) + "\n" +
-                            "\t\tpast_balance: " + post.getBill().getSummary().getPast_balance() + "\n" +
-                            "\t\ttotal_balance: " + post.getBill().getSummary().getTotal_balance() + "\n" +
+                            "\t\tdue_date: " + android.text.format.DateFormat.format("yyyy-MM-dd", post.getBill().getSummary().getDueDate()) + "\n" +
+                            "\t\tclose_date: " + android.text.format.DateFormat.format("yyyy-MM-dd", post.getBill().getSummary().getCloseDate()) + "\n" +
+                            "\t\tpast_balance: " + post.getBill().getSummary().getPastBalance() + "\n" +
+                            "\t\ttotal_balance: " + post.getBill().getSummary().getTotalBalance() + "\n" +
                             "\t\tinterest: " + post.getBill().getSummary().getInterest() + "\n" +
-                            "\t\ttotal_cumulative: " + post.getBill().getSummary().getTotal_cumulative() + "\n" +
+                            "\t\ttotal_cumulative: " + post.getBill().getSummary().getTotalCumulative() + "\n" +
                             "\t\tpaid: " + post.getBill().getSummary().getPaid() + "\n" +
-                            "\t\tminimum_payment: " + post.getBill().getSummary().getMinimum_payment() + "\n" +
-                            "\t\topen_date: " + android.text.format.DateFormat.format("yyyy-MM-dd", post.getBill().getSummary().getOpen_date()) + "\n" +
+                            "\t\tminimum_payment: " + post.getBill().getSummary().getMinimumPayment() + "\n" +
+                            "\t\topen_date: " + android.text.format.DateFormat.format("yyyy-MM-dd", post.getBill().getSummary().getOpenDate()) + "\n" +
                             "\t_links:\n" +
                             "\t\tself:\n" +
                             "\t\t\thref: " + selfHref + "\n" +
@@ -160,11 +161,11 @@ public class SplashScreenActivity extends Activity implements Response.Listener,
                             "\t\tbarcode:\n" +
                             "\t\t\thref: " + barcodeHref + "\n" +
                             "\tbarcode: " + post.getBill().getBarcode() + "\n" +
-                            "\tlinha_digitavel: " + post.getBill().getLinha_digitavel() + "\n"
+                            "\tlinha_digitavel: " + post.getBill().getLinhaDigitavel() + "\n"
             );
-            for(NuLineItemsObjBean lineItems: post.getBill().getLine_items()){
-                postList.append("\tline_items:\n" +
-                                "\t\tpost_date: " + android.text.format.DateFormat.format("yyyy-MM-dd", lineItems.getPost_date()) + "\n" +
+            for(NuLineItemsObjBean lineItems: post.getBill().getLineItems()){
+                postList.append("\tlineItems:\n" +
+                                "\t\tpost_date: " + android.text.format.DateFormat.format("yyyy-MM-dd", lineItems.getPostDate()) + "\n" +
                                 "\t\tamount: " + lineItems.getAmount() + "\n" +
                                 "\t\ttitle: " + lineItems.getTitle() + "\n" +
                                 "\t\tindex: " + lineItems.getIndex() + "\n" +
@@ -173,6 +174,8 @@ public class SplashScreenActivity extends Activity implements Response.Listener,
                 );
             }
         }
+
+
 
         mTextView.setText(postList);
     }

@@ -1,7 +1,7 @@
 # NuProject
 
 I will update the README with some thoughts about implementation which i could have used but i didn't (for n-reasons) use and
-also some _links.
+also some links.
 
 1 - The Http/json request consumer
 
@@ -78,3 +78,31 @@ Geez, i just realized that not all the fields are required, so rather than retur
 fields can/will change (facepalm).
 I need to make a check on which fields are required, right now, i am able to parse everything and show it in a scrollview, so...
 getting/parsing the json is finished, just missing some details.
+
+4 - The db
+
+Ok, so today i was checking how to send the information forward. I've thought that making it parcelable would be a good choice, but...
+everytime keeping a array of bill objects, seems a little... stupid? So i will be saving them inside a db, which would be the correct
+solution to begin with. I will use the same beans (or at least reuse) that i generated for the json parsing with gson, but instead of
+making everything serializable, i will make some id fields not serializable (aka transient).
+
+http://www.javacreed.com/gson-annotations-example
+http://camelcode.org/tutorial/Exclude-fields-from-JSON-with-java-modifiers-using-Gson.htm
+http://camelcode.org/tutorial/Exclude-fields-from-JSON-using-Gson-with-@Expose.htm#82
+
+Merry xmas! finally the db is partially done! I started by creating the DB as usual, but a friend of mine said that he used a nice lib to
+make things easier. Sugar ORM!
+And what a piece of s* that was... Come on devs, make libs and make documentation... it was painful to make it almost work (almost a day)
+and then, i realized that i needed to check if sugar ORM was the best choice, since relations seemed really... lacking...
+I've made a small research and found out that GreenDAO and DBFlow seemed to be the best choices for SQL:
+
+http://www.raizlabs.com/dev/2015/02/go-dbflow-fastest-android-orm-database-library/
+
+I know that the research was done by the devs of dbflow but they seemed to convince me to use the dbflow.
+And... more painful stuff to do before everything got settled. Android Studio seems to has some issues with gradle build, and was showing
+an strange error. I needed to go to File>invalidate caches/restart, in order to fix the errors that was showing, update everything and then,
+just then, see the real error.
+The id of a class, which was used as a primary key and exported as a foreign key to other classes, had the private modifier. But hey... i've
+done my getters and setters... but, that was not enough! You must remove the private modifier in order to make it work.
+I wasted almost... 2 days with DBFlow 1 with sugar orm and half a day with usual db implementation.
+I hope to have everything working until monday... oh... and the unit tests...
