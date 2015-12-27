@@ -19,9 +19,9 @@ public class NuSummaryContract extends BaseModel{
     @ForeignKey(saveForeignKeyModel = false)
     NuBillContract nuBillContract;
 
-    @Column
+    @Column(typeConverter = DateConverter.class)
     private Date dueDate;
-    @Column
+    @Column(typeConverter = DateConverter.class)
     private Date closeDate;
     @Column
     private Long pastBalance;
@@ -35,10 +35,35 @@ public class NuSummaryContract extends BaseModel{
     private Long paid;
     @Column
     private Long minimumPayment;
-    @Column
+    @Column(typeConverter = DateConverter.class)
     private Date openDate;
 
     public NuSummaryContract() {
+    }
+
+    public NuSummaryContract(Date dueDate, Date closeDate, Long pastBalance, Long totalBalance, Long interest, Long totalCumulative, Long paid, Long minimumPayment, Date openDate) {
+        this.dueDate = dueDate;
+        this.closeDate = closeDate;
+        this.pastBalance = pastBalance;
+        this.totalBalance = totalBalance;
+        this.interest = interest;
+        this.totalCumulative = totalCumulative;
+        this.paid = paid;
+        this.minimumPayment = minimumPayment;
+        this.openDate = openDate;
+    }
+
+    public NuSummaryContract(NuBillContract nuBillContract, Date dueDate, Date closeDate, Long pastBalance, Long totalBalance, Long interest, Long totalCumulative, Long paid, Long minimumPayment, Date openDate) {
+        this.nuBillContract = nuBillContract;
+        this.dueDate = dueDate;
+        this.closeDate = closeDate;
+        this.pastBalance = pastBalance;
+        this.totalBalance = totalBalance;
+        this.interest = interest;
+        this.totalCumulative = totalCumulative;
+        this.paid = paid;
+        this.minimumPayment = minimumPayment;
+        this.openDate = openDate;
     }
 
     public long getId() {

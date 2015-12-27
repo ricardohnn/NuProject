@@ -31,6 +31,19 @@ public class NuLinksContract extends BaseModel{
         return nuBillContract;
     }
 
+    public NuLinksContract(String self, String boletoEmail, String barcode) {
+        this.self = self;
+        this.boletoEmail = boletoEmail;
+        this.barcode = barcode;
+    }
+
+    public NuLinksContract(NuBillContract nuBillContract, String self, String boletoEmail, String barcode) {
+        this.nuBillContract = nuBillContract;
+        this.self = self;
+        this.boletoEmail = boletoEmail;
+        this.barcode = barcode;
+    }
+
     public void setNuBillContract(NuBillContract nuBillContract) {
         this.nuBillContract = nuBillContract;
     }

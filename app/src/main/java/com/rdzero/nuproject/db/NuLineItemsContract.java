@@ -20,7 +20,7 @@ public class NuLineItemsContract extends BaseModel{
     @ForeignKey(saveForeignKeyModel = false)
     ForeignKeyContainer<NuBillContract> nuBillForeignKeyContainer;
 
-    @Column
+    @Column(typeConverter = DateConverter.class)
     private Date postDate;
     @Column
     private Long amount;
@@ -34,6 +34,15 @@ public class NuLineItemsContract extends BaseModel{
     private String href;
 
     public NuLineItemsContract() {
+    }
+
+    public NuLineItemsContract(Date postDate, Long amount, String title, Long index, Long charges, String href) {
+        this.postDate = postDate;
+        this.amount = amount;
+        this.title = title;
+        this.index = index;
+        this.charges = charges;
+        this.href = href;
     }
 
     public long getId() {

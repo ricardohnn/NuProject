@@ -1,9 +1,7 @@
 package com.rdzero.nuproject.activities;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -17,6 +15,10 @@ import com.google.gson.reflect.TypeToken;
 import com.rdzero.nuproject.R;
 import com.rdzero.nuproject.beans.NuBillObj;
 import com.rdzero.nuproject.beans.NuLineItemsObjBean;
+import com.rdzero.nuproject.db.NuBillContract;
+import com.rdzero.nuproject.db.NuLineItemsContract;
+import com.rdzero.nuproject.db.NuLinksContract;
+import com.rdzero.nuproject.db.NuSummaryContract;
 import com.rdzero.nuproject.net.CustomJSONArrayRequest;
 import com.rdzero.nuproject.net.CustomVolleyRequestQueue;
 
@@ -118,6 +120,72 @@ public class SplashScreenActivity extends Activity implements Response.Listener,
 
         Type listType = new TypeToken<ArrayList<NuBillObj>>(){}.getType();
         nuBillArrayList = new GsonBuilder().serializeNulls().setDateFormat("yyyy-MM-dd").create().fromJson(response.toString(), listType);
+        for(NuBillObj billObj : nuBillArrayList){
+            String self;
+            String boleto_email;
+            String barcode;
+
+            if(billObj.getBill().getLinks().getSelf() != null)
+                self = billObj.getBill().getLinks().getSelf().getHref();
+            else
+                self = "";
+
+            if(billObj.getBill().getLinks().getBoletoEmail() != null)
+                boleto_email = billObj.getBill().getLinks().getBoletoEmail().getHref();
+            else
+                boleto_email = "";
+
+            if(billObj.getBill().getLinks().getBarcode() != null)
+                barcode = billObj.getBill().getLinks().getBarcode().getHref();
+            else
+                barcode = "";
+
+            NuBillContract nuBillContract = new NuBillContract(
+                    billObj.getBill().getId(),
+                    billObj.getBill().getState(),
+                    billObj.getBill().getBarcode(),
+                    billObj.getBill().getLinhaDigitavel()
+            );
+            nuBillContract.save();
+
+            NuSummaryContract nuSummaryContract = new NuSummaryContract(
+                    nuBillContract,
+                    billObj.getBill().getSummary().getDueDate(),
+                    billObj.getBill().getSummary().getCloseDate(),
+                    billObj.getBill().getSummary().getPastBalance(),
+                    billObj.getBill().getSummary().getTotalBalance(),
+                    billObj.getBill().getSummary().getInterest(),
+                    billObj.getBill().getSummary().getTotalCumulative(),
+                    billObj.getBill().getSummary().getPaid(),
+                    billObj.getBill().getSummary().getMinimumPayment(),
+                    billObj.getBill().getSummary().getOpenDate()
+            );
+            nuSummaryContract.save();
+
+            NuLinksContract nuLinksContract = new NuLinksContract(
+                    nuBillContract,
+                    self,
+                    boleto_email,
+                    barcode
+            );
+
+            nuLinksContract.save();
+
+            for(NuLineItemsObjBean nuLineItems: billObj.getBill().getLineItems()){
+                NuLineItemsContract nuLineItemsContract = new NuLineItemsContract(
+                        nuLineItems.getPostDate(),
+                        nuLineItems.getAmount(),
+                        nuLineItems.getTitle(),
+                        nuLineItems.getIndex(),
+                        nuLineItems.getCharges(),
+                        nuLineItems.getHref()
+                );
+                nuLineItemsContract.associateNuBill(nuBillContract);
+                nuLineItemsContract.save();
+                nuBillContract.save();
+            }
+        }
+
         postList=new StringBuffer();
         for(NuBillObj post: nuBillArrayList){
             String selfHref;
@@ -174,8 +242,6 @@ public class SplashScreenActivity extends Activity implements Response.Listener,
                 );
             }
         }
-
-
 
         mTextView.setText(postList);
     }

@@ -30,6 +30,13 @@ public class NuBillContract extends BaseModel{
     public NuBillContract() {
     }
 
+    public NuBillContract(String id, String state, String barcode, String linhaDigitavel) {
+        this.id = id;
+        this.state = state;
+        this.barcode = barcode;
+        this.linhaDigitavel = linhaDigitavel;
+    }
+
     public String getId() {
         return id;
     }

@@ -104,5 +104,22 @@ an strange error. I needed to go to File>invalidate caches/restart, in order to 
 just then, see the real error.
 The id of a class, which was used as a primary key and exported as a foreign key to other classes, had the private modifier. But hey... i've
 done my getters and setters... but, that was not enough! You must remove the private modifier in order to make it work.
-I wasted almost... 2 days with DBFlow 1 with sugar orm and half a day with usual db implementation.
+
+I wasted almost... 2 days with DBFlow, 1 with sugar orm and half a day with usual db implementation.
 I hope to have everything working until monday... oh... and the unit tests...
+
+I am now saving to the db correctly... well... almost.
+At first glance, i have not seen that there are no ID for some of the bill input. I mean... why?! Just why?
+I will now analyze what fields are missing (let's just considerer that any field inside bill can be empty), but for that, i have to search
+for a better sql viewer, just to make things easier.
+SqliteSpy seems pretty much ok for now, but is so annoying to keep dumping the db everytime.
+Since i don't have much time, i will use genymotion (nexus 5 configs) and just a simple script to dump and send as a parameter to sqlitespy:
+
+import os
+
+os.system("rm ./nuProjectDatabase.db")
+os.system("adb wait-for-device; adb pull /data/data/com.rdzero.nuproject/databases/nuProjectDatabase.db ./nuProjectDatabase.db")
+os.system("/Downloads/SQLiteSpy_1.9.10/SQLiteSpy.exe ./nuProjectDatabase.db &")
+os.system("adb shell pm clear com.rdzero.nuproject")
+
+That will be enough for now. I will need to re-run the app everytime to save the db, but it is easier to check any modification to the db.
