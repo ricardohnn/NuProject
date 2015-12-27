@@ -1,5 +1,7 @@
 package com.rdzero.nuproject.db;
 
+import android.annotation.SuppressLint;
+
 import com.raizlabs.android.dbflow.converter.TypeConverter;
 
 import java.text.ParseException;
@@ -12,6 +14,7 @@ import java.util.Date;
 @com.raizlabs.android.dbflow.annotation.TypeConverter
 public class DateConverter extends TypeConverter<String,Date> {
 
+    @SuppressLint("SimpleDateFormat")
     private SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
 
     @Override
@@ -21,7 +24,7 @@ public class DateConverter extends TypeConverter<String,Date> {
 
     @Override
     public Date getModelValue(String date) {
-        if(date == "" || date.equals(null)){
+        if("".equals(date) || date == null){
             return null;
         }
         try{

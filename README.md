@@ -123,3 +123,39 @@ os.system("/Downloads/SQLiteSpy_1.9.10/SQLiteSpy.exe ./nuProjectDatabase.db &")
 os.system("adb shell pm clear com.rdzero.nuproject")
 
 That will be enough for now. I will need to re-run the app everytime to save the db, but it is easier to check any modification to the db.
+
+Ok... so bill has only 1 field that seems to be required, the state one.
+So i cannot use any of these fields as a primary key, which means, i would probably use an autoincrement id as primary key (which will be my
+foreign key for the other tables).
+
+That worked, but that will also affect any deletion/insertion since i cannot go directly to a defined id.
+
+SELECT NuBillContract.id, NuBillContract.billId, NuBillContract.state, NuBillContract.barcode, NuBillContract.linhaDigitavel,
+NuSummaryContract.dueDate, NuSummaryContract.closeDate, NuSummaryContract.pastBalance, NuSummaryContract.totalBalance, NuSummaryContract.interest, NuSummaryContract.totalCumulative, NuSummaryContract.paid, NuSummaryContract.minimumPayment, NuSummaryContract.openDate,
+NuLinksContract.self, NuLinksContract.boletoEmail, NuLinksContract.barcode,
+NuLineItemsContract.postDate, NuLineItemsContract.amount, NuLineItemsContract.title, NuLineItemsContract."index", NuLineItemsContract.charges, NuLineItemsContract.href 
+FROM NuBillContract, NuSummaryContract, NuLinksContract, NuLineItemsContract
+WHERE NuBillContract.id=4
+AND NuSummaryContract.nuBillContract_id=NuBillContract.id
+AND NuLineItemsContract.nuBillForeignKeyContainer_id=NuBillContract.id
+AND NuLinksContract.nuBillContract_id=NuBillContract.id
+
+I will be running the query above just to check some important fields that might be missing.
+So checking the worst case scenario (that is used on this project, which means, not necessarily the real worst case) I have that the following
+fields are not required:
+
+Bill Contract
+id, barcode, linhaDigitavel
+
+Summary Contract
+paid
+
+Links Contract (consider href)
+self, boletoEmail, barcode
+
+Line Items Contract (check that amount can be a negative number, which is the one that makes the rest of the values empty)
+index, charges, href
+
+I don't have a problem with all these fields, since it returns null from the json parsing, the only problem is the links which can be an empty
+object, but in order to have a better db (without holes) i will create some default values: if it is null then add an empty string or a 0 value.
+Since i am focusing on making the "back-end" stable, i will be making the network validation also.

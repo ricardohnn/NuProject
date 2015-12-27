@@ -15,34 +15,43 @@ import java.util.List;
 public class NuBillContract extends BaseModel{
 
     @Column
-    @PrimaryKey(autoincrement = false)
-    String id;
+    @PrimaryKey(autoincrement = true)
+    long id;
 
+    @Column
+    private String billId;
     @Column
     private String state;
     @Column
     private String barcode;
     @Column
     private String linhaDigitavel;
-
     List<NuLineItemsContract> nuLineItemsContractList;
 
     public NuBillContract() {
     }
 
-    public NuBillContract(String id, String state, String barcode, String linhaDigitavel) {
-        this.id = id;
+    public NuBillContract(String billId, String state, String barcode, String linhaDigitavel) {
+        this.billId = billId;
         this.state = state;
         this.barcode = barcode;
         this.linhaDigitavel = linhaDigitavel;
     }
 
-    public String getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(long id) {
         this.id = id;
+    }
+
+    public String getBillId() {
+        return billId;
+    }
+
+    public void setBillId(String billId) {
+        this.billId = billId;
     }
 
     public String getState() {

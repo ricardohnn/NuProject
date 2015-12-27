@@ -32,7 +32,7 @@ public class CustomJSONObjectRequest extends JsonObjectRequest {
 
     @Override
     public RetryPolicy getRetryPolicy() {
-        // here you can write a custom retry policy
+        // here you can write a custom retry policy, but i won`t
         return super.getRetryPolicy();
     }
 }

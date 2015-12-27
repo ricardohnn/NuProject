@@ -12,6 +12,7 @@ import java.util.Date;
 
 @Table(database = NuProjDatabase.class)
 public class NuLineItemsContract extends BaseModel{
+    
     @Column
     @PrimaryKey(autoincrement = true)
     long id;

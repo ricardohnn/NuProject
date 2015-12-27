@@ -4,7 +4,6 @@ import com.raizlabs.android.dbflow.annotation.Database;
 
 /**
  * Created by ricardohnn on 2015-12-20.
- * based on http://www.androidhive.info/2013/09/android-sqlite-database-with-multiple-tables/
  */
 @Database(name = NuProjDatabase.NAME, version = NuProjDatabase.VERSION)
 public class NuProjDatabase{
