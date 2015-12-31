@@ -159,3 +159,9 @@ index, charges, href
 I don't have a problem with all these fields, since it returns null from the json parsing, the only problem is the links which can be an empty
 object, but in order to have a better db (without holes) i will create some default values: if it is null then add an empty string or a 0 value.
 Since i am focusing on making the "back-end" stable, i will be making the network validation also.
+
+Docs in DBFlow are so f* bad that you cannot even copy and test, it seems like every example in there was just to say "hey we have this, but
+you need to find out how to use it, cause f* you".
+
+Ok, made all the basic sql request, it is writting in the DB and loading correctly, not actually worrying about update (because i don`t have time),
+so for now, only add and search will be implemented.

@@ -7,6 +7,9 @@ public class NuBillObj {
     @SerializedName("bill")
     private NuBillObjBean bill;
 
+    public NuBillObj() {
+    }
+
     public NuBillObj(NuBillObjBean bill) {
         this.bill = bill;
     }

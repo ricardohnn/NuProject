@@ -28,10 +28,12 @@ import org.json.JSONArray;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.List;
 
 public class SplashScreenActivity extends Activity implements Response.Listener, Response.ErrorListener  {
 
     public static final String REQUEST_TAG = "MainVolleyActivity";
+    private static final String TAG = SplashScreenActivity.class.getName();
     private TextView mTextView;
     private Button mButton;
     private String url = "https://s3-sa-east-1.amazonaws.com/mobile-challenge/bill/bill_new.json";
@@ -122,67 +124,78 @@ public class SplashScreenActivity extends Activity implements Response.Listener,
 
         Type listType = new TypeToken<ArrayList<NuBillObj>>(){}.getType();
         nuBillArrayList = new GsonBuilder().serializeNulls().setDateFormat("yyyy-MM-dd").create().fromJson(response.toString(), listType);
-        if(new DbHelper().saveJsonResult(nuBillArrayList))
-            Log.d("TAG","Saved to DB correctly");
 
-        postList=new StringBuffer();
-        for(NuBillObj post: nuBillArrayList){
-            String selfHref;
-            String boleto_emailHref;
-            String barcodeHref;
+        mTextView.setText("GOT THE JSON");
 
-            if(post.getBill().getLinks().getSelf() != null)
-                selfHref = post.getBill().getLinks().getSelf().getHref();
-            else
-                selfHref = "";
+        DbHelper dbHelper = new DbHelper();
 
-            if(post.getBill().getLinks().getBoletoEmail() != null)
-                boleto_emailHref = post.getBill().getLinks().getBoletoEmail().getHref();
-            else
-                boleto_emailHref = "";
+        if(dbHelper.saveJsonResult(nuBillArrayList))
+            Log.d(TAG,"Saved to DB correctly");
 
-            if(post.getBill().getLinks().getBarcode() != null)
-                barcodeHref = post.getBill().getLinks().getBarcode().getHref();
-            else
-                barcodeHref = "";
-
-
-            postList.append("bill:\n" +
-                            "\tstate: " + post.getBill().getState() + "\n" +
-                            "\tid: " + post.getBill().getId() + "\n" +
-                            "\tsummary:\n" +
-                            "\t\tdue_date: " + android.text.format.DateFormat.format("yyyy-MM-dd", post.getBill().getSummary().getDueDate()) + "\n" +
-                            "\t\tclose_date: " + android.text.format.DateFormat.format("yyyy-MM-dd", post.getBill().getSummary().getCloseDate()) + "\n" +
-                            "\t\tpast_balance: " + post.getBill().getSummary().getPastBalance() + "\n" +
-                            "\t\ttotal_balance: " + post.getBill().getSummary().getTotalBalance() + "\n" +
-                            "\t\tinterest: " + post.getBill().getSummary().getInterest() + "\n" +
-                            "\t\ttotal_cumulative: " + post.getBill().getSummary().getTotalCumulative() + "\n" +
-                            "\t\tpaid: " + post.getBill().getSummary().getPaid() + "\n" +
-                            "\t\tminimum_payment: " + post.getBill().getSummary().getMinimumPayment() + "\n" +
-                            "\t\topen_date: " + android.text.format.DateFormat.format("yyyy-MM-dd", post.getBill().getSummary().getOpenDate()) + "\n" +
-                            "\t_links:\n" +
-                            "\t\tself:\n" +
-                            "\t\t\thref: " + selfHref + "\n" +
-                            "\t\tboleto_email:\n" +
-                            "\t\t\thref: " + boleto_emailHref + "\n" +
-                            "\t\tbarcode:\n" +
-                            "\t\t\thref: " + barcodeHref + "\n" +
-                            "\tbarcode: " + post.getBill().getBarcode() + "\n" +
-                            "\tlinha_digitavel: " + post.getBill().getLinhaDigitavel() + "\n"
-            );
-            for(NuLineItemsObjBean lineItems: post.getBill().getLineItems()){
-                postList.append("\tlineItems:\n" +
-                                "\t\tpost_date: " + android.text.format.DateFormat.format("yyyy-MM-dd", lineItems.getPostDate()) + "\n" +
-                                "\t\tamount: " + lineItems.getAmount() + "\n" +
-                                "\t\ttitle: " + lineItems.getTitle() + "\n" +
-                                "\t\tindex: " + lineItems.getIndex() + "\n" +
-                                "\t\tcharges: " + lineItems.getCharges() + "\n" +
-                                "\t\thref: " + lineItems.getHref() + "\n"
-                );
-            }
+        List<NuBillContract> nuBillContracts = dbHelper.getBillList();
+        for(NuBillContract bill: nuBillContracts){
+            NuSummaryContract nuSummaryContract = dbHelper.getSummaryContractFromBill(bill.getId());
+            NuLinksContract nuLinksContract = dbHelper.getLinksContractFromBill(bill.getId());
+            List<NuLineItemsContract> nuLineItemsContracts = dbHelper.getLineItemsContractList(bill.getId());
         }
 
-        mTextView.setText(postList);
+//        postList=new StringBuffer();
+//        for(NuBillObj post: nuBillArrayList){
+//            String selfHref;
+//            String boleto_emailHref;
+//            String barcodeHref;
+//
+//            if(post.getBill().getLinks().getSelf() != null)
+//                selfHref = post.getBill().getLinks().getSelf().getHref();
+//            else
+//                selfHref = "";
+//
+//            if(post.getBill().getLinks().getBoletoEmail() != null)
+//                boleto_emailHref = post.getBill().getLinks().getBoletoEmail().getHref();
+//            else
+//                boleto_emailHref = "";
+//
+//            if(post.getBill().getLinks().getBarcode() != null)
+//                barcodeHref = post.getBill().getLinks().getBarcode().getHref();
+//            else
+//                barcodeHref = "";
+//
+//            postList.append("bill:\n" +
+//                            "\tstate: " + post.getBill().getState() + "\n" +
+//                            "\tid: " + post.getBill().getId() + "\n" +
+//                            "\tsummary:\n" +
+//                            "\t\tdue_date: " + android.text.format.DateFormat.format("yyyy-MM-dd", post.getBill().getSummary().getDueDate()) + "\n" +
+//                            "\t\tclose_date: " + android.text.format.DateFormat.format("yyyy-MM-dd", post.getBill().getSummary().getCloseDate()) + "\n" +
+//                            "\t\tpast_balance: " + post.getBill().getSummary().getPastBalance() + "\n" +
+//                            "\t\ttotal_balance: " + post.getBill().getSummary().getTotalBalance() + "\n" +
+//                            "\t\tinterest: " + post.getBill().getSummary().getInterest() + "\n" +
+//                            "\t\ttotal_cumulative: " + post.getBill().getSummary().getTotalCumulative() + "\n" +
+//                            "\t\tpaid: " + post.getBill().getSummary().getPaid() + "\n" +
+//                            "\t\tminimum_payment: " + post.getBill().getSummary().getMinimumPayment() + "\n" +
+//                            "\t\topen_date: " + android.text.format.DateFormat.format("yyyy-MM-dd", post.getBill().getSummary().getOpenDate()) + "\n" +
+//                            "\t_links:\n" +
+//                            "\t\tself:\n" +
+//                            "\t\t\thref: " + selfHref + "\n" +
+//                            "\t\tboleto_email:\n" +
+//                            "\t\t\thref: " + boleto_emailHref + "\n" +
+//                            "\t\tbarcode:\n" +
+//                            "\t\t\thref: " + barcodeHref + "\n" +
+//                            "\tbarcode: " + post.getBill().getBarcode() + "\n" +
+//                            "\tlinha_digitavel: " + post.getBill().getLinhaDigitavel() + "\n"
+//            );
+//            for(NuLineItemsObjBean lineItems: post.getBill().getLineItems()){
+//                postList.append("\tlineItems:\n" +
+//                                "\t\tpost_date: " + android.text.format.DateFormat.format("yyyy-MM-dd", lineItems.getPostDate()) + "\n" +
+//                                "\t\tamount: " + lineItems.getAmount() + "\n" +
+//                                "\t\ttitle: " + lineItems.getTitle() + "\n" +
+//                                "\t\tindex: " + lineItems.getIndex() + "\n" +
+//                                "\t\tcharges: " + lineItems.getCharges() + "\n" +
+//                                "\t\thref: " + lineItems.getHref() + "\n"
+//                );
+//            }
+//        }
+
+//        mTextView.setText(postList);
     }
 
 }

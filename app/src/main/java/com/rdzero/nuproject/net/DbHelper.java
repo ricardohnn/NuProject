@@ -1,18 +1,28 @@
 package com.rdzero.nuproject.net;
 
+import android.util.Log;
+
+import com.raizlabs.android.dbflow.sql.language.SQLite;
+import com.rdzero.nuproject.BuildConfig;
 import com.rdzero.nuproject.beans.NuBillObj;
 import com.rdzero.nuproject.beans.NuLineItemsObjBean;
 import com.rdzero.nuproject.db.NuBillContract;
+import com.rdzero.nuproject.db.NuBillContract_Table;
 import com.rdzero.nuproject.db.NuLineItemsContract;
+import com.rdzero.nuproject.db.NuLineItemsContract_Table;
 import com.rdzero.nuproject.db.NuLinksContract;
+import com.rdzero.nuproject.db.NuLinksContract_Table;
 import com.rdzero.nuproject.db.NuSummaryContract;
+import com.rdzero.nuproject.db.NuSummaryContract_Table;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by ricardohnn on 2015-12-27.
  */
 public class DbHelper {
+    private static final String TAG = DbHelper.class.getName();
 
     public boolean saveJsonResult(ArrayList<NuBillObj> billObjList){
         if (billObjList != null){
@@ -67,5 +77,90 @@ public class DbHelper {
             return false;
         }
         return true;
+    }
+
+    public List<NuBillContract> getBillList(){
+        List<NuBillContract> nuBillContracts = SQLite
+                .select()
+                .from(NuBillContract.class)
+                .orderBy(NuBillContract_Table.id, true)
+                .queryList();
+
+        if (BuildConfig.DEBUG) {
+            for(NuBillContract bill: nuBillContracts){
+                Log.d(TAG,
+                        "Bill:\n" +
+                                "\tbarcode: " + bill.getBarcode() + "\n" +
+                                "\tbillId: " + bill.getBillId() + "\n" +
+                                "\tlinha digitavel: " + bill.getLinhaDigitavel() + "\n" +
+                                "\tstate: " + bill.getState() + "\n");
+            }
+        }
+
+        return nuBillContracts;
+    }
+
+    public NuSummaryContract getSummaryContractFromBill (long id){
+        NuSummaryContract nuSummaryContract = SQLite
+                .select()
+                .from(NuSummaryContract.class)
+                .where(NuSummaryContract_Table.nuBillContract_id.eq(id))
+                .querySingle();
+
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG,
+                    "Summary:\n" +
+                            "\tdue_date: " + android.text.format.DateFormat.format("yyyy-MM-dd", nuSummaryContract.getDueDate()) + "\n" +
+                            "\tclose_date: " + android.text.format.DateFormat.format("yyyy-MM-dd", nuSummaryContract.getCloseDate()) + "\n" +
+                            "\tpast_balance: " + nuSummaryContract.getPastBalance() + "\n" +
+                            "\ttotal_balance: " + nuSummaryContract.getTotalBalance() + "\n" +
+                            "\tinterest: " + nuSummaryContract.getInterest() + "\n" +
+                            "\ttotal_cumulative: " + nuSummaryContract.getTotalCumulative() + "\n" +
+                            "\tpaid: " + nuSummaryContract.getPaid() + "\n" +
+                            "\tminimum_payment: " + nuSummaryContract.getMinimumPayment() + "\n" +
+                            "\topen_date: " + android.text.format.DateFormat.format("yyyy-MM-dd", nuSummaryContract.getOpenDate()) + "\n");
+        }
+
+        return nuSummaryContract;
+    }
+
+    public NuLinksContract getLinksContractFromBill (long id){
+        NuLinksContract nuLinksContract = SQLite
+                .select()
+                .from(NuLinksContract.class)
+                .where(NuLinksContract_Table.nuBillContract_id.eq(id))
+                .querySingle();
+
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG,
+                    "_links:\n" +
+                            "\tself href: " + nuLinksContract.getSelf() + "\n" +
+                            "\tboleto_email href: " + nuLinksContract.getBoletoEmail() + "\n" +
+                            "\tbarcode href: " + nuLinksContract.getBarcode() + "\n");
+        }
+
+        return nuLinksContract;
+    }
+
+    public List<NuLineItemsContract> getLineItemsContractList(long id){
+        List<NuLineItemsContract> nuLineItemsContracts = SQLite
+                .select()
+                .from(NuLineItemsContract.class)
+                .where(NuLineItemsContract_Table.nuBillForeignKeyContainer_id.eq(id))
+                .queryList();
+
+        if (BuildConfig.DEBUG) {
+            for(NuLineItemsContract nuLine: nuLineItemsContracts){
+                Log.d(TAG,
+                        "LineItems:\n" +
+                                "\tpost_date: " + android.text.format.DateFormat.format("yyyy-MM-dd", nuLine.getPostDate()) + "\n" +
+                                "\tamount: " + nuLine.getAmount() + "\n" +
+                                "\ttitle: " + nuLine.getTitle() + "\n" +
+                                "\tindex: " + nuLine.getIndex() + "\n" +
+                                "\tcharges: " + nuLine.getCharges() + "\n" +
+                                "\thref: " + nuLine.getHref() + "\n");
+            }
+        }
+        return nuLineItemsContracts;
     }
 }
