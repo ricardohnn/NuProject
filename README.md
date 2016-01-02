@@ -165,3 +165,24 @@ you need to find out how to use it, cause f* you".
 
 Ok, made all the basic sql request, it is writting in the DB and loading correctly, not actually worrying about update (because i don`t have time),
 so for now, only add and search will be implemented.
+
+I'm a little disapointed since i won't be able to finish it on time, but as the "chief" said, this will be good to learn something new and at the
+same time, challenging. Well, i'll give him that... I needed to study things that i have forgotten long ago, and some other new things and new libs.
+Although i won't be able to deliver on time, i will still finish this (as always, i am only able to work on this project on weekends) in order to
+improve my knowledge and perhaps share some.
+
+Anyway, since i have no knowledge on unit testing, and most of the places i have worked had no concern on that either, i will have to study it from
+zero.
+
+Well let's start with what is a mocking framework:
+
+http://codetunnel.io/what-is-a-mocking-framework-why-is-it-useful/
+
+Although i was not able to separate the project as informed by this tutorial (not sure why Android Studio complicates so much the creation of new
+folders...), i like vogella tutorials, so i might give it another try later.
+
+http://www.vogella.com/tutorials/AndroidTesting/article.html
+
+For now, i will read the followings (as i will be adding more references in here):
+
+http://www.toptal.com/android/testing-like-a-true-green-droid

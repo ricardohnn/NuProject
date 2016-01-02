@@ -8,4 +8,6 @@
     <string name="hello_world">Hello world!</string>
 
     <string name="action_settings">Settings</string>
+    <string name="REQUEST_TAG">VolleyRequestTAG</string>
+    <string name="request_URL">https://s3-sa-east-1.amazonaws.com/mobile-challenge/bill/bill_new.json</string>
 </resources>
