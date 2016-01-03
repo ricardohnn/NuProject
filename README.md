@@ -186,3 +186,18 @@ http://www.vogella.com/tutorials/AndroidTesting/article.html
 For now, i will read the followings (as i will be adding more references in here):
 
 http://www.toptal.com/android/testing-like-a-true-green-droid
+
+"Because it exercises your full HTTP stack, you can be confident that you're testing everything. You can even copy & paste HTTP responses from your real web server to create representative test cases. Or test that your code survives in awkward-to-reproduce situations like 500 errors or slow-loading responses."
+Seems pretty useful... will match perfectly (i think) with what i need for now, I will read it later.
+
+https://github.com/square/okhttp/tree/master/mockwebserver
+http://developer.android.com/tools/testing/testing_android.html
+
+I needed to calculate the period between 2 dates, because i didn't want to refetch the json everytime, so i've decided to use JodaTime for this.
+I think i have the stupidity prize of the year. To compare a "period of time, measured in days", i need to do the following:
+
+period.normalizedStandard(PeriodType.days()).getDays()
+
+If i only use period.getDays() it will return something like (comparing today vs +10 days) 2! Yay F* logics.
+
+Yeap, i won't be able to finish it "on time" so let's make this thing right. I will make the update query and update policy. 

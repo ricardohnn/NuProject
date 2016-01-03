@@ -2,12 +2,12 @@ package com.rdzero.nuproject.activities;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
-import android.widget.Button;
 import android.widget.TextView;
 
 import com.android.volley.Request;
@@ -16,34 +16,34 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+import com.rdzero.nuproject.BuildConfig;
 import com.rdzero.nuproject.R;
 import com.rdzero.nuproject.beans.NuBillObj;
-import com.rdzero.nuproject.db.NuBillContract;
-import com.rdzero.nuproject.db.NuLineItemsContract;
-import com.rdzero.nuproject.db.NuLinksContract;
-import com.rdzero.nuproject.db.NuSummaryContract;
+import com.rdzero.nuproject.db.DbHelper;
 import com.rdzero.nuproject.net.CustomJSONArrayRequest;
 import com.rdzero.nuproject.net.CustomVolleyRequestQueue;
-import com.rdzero.nuproject.net.DbHelper;
 
+import org.joda.time.DateTime;
+import org.joda.time.Period;
+import org.joda.time.PeriodType;
 import org.json.JSONArray;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.List;
 
 public class SplashScreenActivity extends Activity implements Response.Listener, Response.ErrorListener {
 
     private static final String TAG = SplashScreenActivity.class.getName();
 
-    private TextView mTextView;
-    private Button mButton;
-    private RequestQueue mQueue;
-    private ArrayList<NuBillObj> nuBillArrayList;
-    private boolean isConnected;
+    public static final String PREF = "NuPrefs" ;
+    private static final String LAST_UPDATE = "LastUpdate";
 
-    // Splash screen timer
-    private static int SPLASH_TIME_OUT = 3000;
+    private SharedPreferences sharedpreferences;
+    private DateTime today;
+    private Period period;
+    private TextView mTextView;
+    private RequestQueue mQueue;
+    private boolean isConnected;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,54 +51,48 @@ public class SplashScreenActivity extends Activity implements Response.Listener,
         setContentView(R.layout.activity_splash_screen);
 
         mTextView = (TextView) findViewById(R.id.teste);
-        mButton = (Button) findViewById(R.id.button);
+
+        sharedpreferences = getSharedPreferences(PREF, Context.MODE_PRIVATE);
+
+        today = new DateTime();
+        DateTime lastUpdate = DateTime.parse(sharedpreferences.getString(LAST_UPDATE, today.toString()));
+        period = new Period(today,lastUpdate);
+
+        if(BuildConfig.DEBUG) {
+            Log.d(TAG, "today : " + today.toString() + "\n" +
+                    "shared : " + lastUpdate.toString() + "\n" +
+                    "period : " + period.normalizedStandard(PeriodType.days()).getDays() + "\n");
+        }
 
         ConnectivityManager cm =
                 (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
         isConnected = activeNetwork != null &&
                 activeNetwork.isConnectedOrConnecting();
-
-//
-//        new Handler().postDelayed(new Runnable() {
-//
-//            /*
-//             * Showing splash screen with a timer. This will be useful when you
-//             * want to show case your app logo / company
-//             */
-//
-//            @Override
-//            public void run() {
-//                // This method will be executed once the timer is over
-//                // Start your app main activity
-//                Intent i = new Intent(SplashScreenActivity.this, MainActivity.class);
-//                startActivity(i);
-//
-//                // close this activity
-//                finish();
-//            }
-//        }, SPLASH_TIME_OUT);
     }
 
     @Override
     protected void onStart() {
         super.onStart();
+
         if(isConnected){
-            mQueue = CustomVolleyRequestQueue.getInstance(this.getApplicationContext())
-                    .getRequestQueue();
+            if(!sharedpreferences.contains(LAST_UPDATE) || period.normalizedStandard(PeriodType.days()).getDays() > 10){
+                mQueue = CustomVolleyRequestQueue.getInstance(this.getApplicationContext())
+                        .getRequestQueue();
 
-            final CustomJSONArrayRequest jsonRequest = new CustomJSONArrayRequest(Request.Method
-                    .GET, getResources().getString(R.string.request_URL),
-                    new JSONArray(), this, this);
-            jsonRequest.setTag(getResources().getString(R.string.REQUEST_TAG));
-
-            mButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    mQueue.add(jsonRequest);
-                }
-            });
+                final CustomJSONArrayRequest jsonRequest = new CustomJSONArrayRequest(Request.Method
+                        .GET, getResources().getString(R.string.request_URL),
+                        new JSONArray(), this, this);
+                jsonRequest.setTag(getResources().getString(R.string.REQUEST_TAG));
+                mQueue.add(jsonRequest);
+            } else{
+                //TODO Some better policy for fetching should be done, but for now, since the json won't be changing, do not refetch
+                Log.d(TAG,"NOT REFETCH THE JSON LESS THAN 10 DAYS : " + period.normalizedStandard(PeriodType.days()).getDays());
+                Intent intent = new Intent(SplashScreenActivity.this, MainActivity.class);
+                startActivity(intent);
+            }
         } else {
+            //TODO Add message for without connection
             Log.d(TAG,"NOT CONNECTED");
             finish();
         }
@@ -137,21 +131,33 @@ public class SplashScreenActivity extends Activity implements Response.Listener,
 
         Type listType = new TypeToken<ArrayList<NuBillObj>>() {
         }.getType();
-        nuBillArrayList = new GsonBuilder().serializeNulls().setDateFormat("yyyy-MM-dd").create().fromJson(response.toString(), listType);
+        ArrayList<NuBillObj> nuBillArrayList = new GsonBuilder()
+                .serializeNulls()
+                .setDateFormat("yyyy-MM-dd")
+                .create()
+                .fromJson(response.toString(), listType);
 
         mTextView.setText("GOT THE JSON");
 
         DbHelper dbHelper = new DbHelper();
 
-        if (dbHelper.saveJsonResult(nuBillArrayList))
-            Log.d(TAG, "Saved to DB correctly");
+        //TODO Only for testing purposes, i will drop the db to recreate it since i won't be creating an update policy
+        dbHelper.dropTable(this);
 
-        List<NuBillContract> nuBillContracts = dbHelper.getBillList();
-        for (NuBillContract bill : nuBillContracts) {
-            NuSummaryContract nuSummaryContract = dbHelper.getSummaryContractFromBill(bill.getId());
-            NuLinksContract nuLinksContract = dbHelper.getLinksContractFromBill(bill.getId());
-            List<NuLineItemsContract> nuLineItemsContracts = dbHelper.getLineItemsContractList(bill.getId());
+        if (dbHelper.saveJsonResult(nuBillArrayList)){
+            Log.d(TAG, "Saved to DB correctly");
+            sharedpreferences.edit().putString(LAST_UPDATE,today.toString()).apply();
         }
+
+        Intent intent = new Intent(SplashScreenActivity.this, MainActivity.class);
+        startActivity(intent);
+
+//        List<NuBillContract> nuBillContracts = dbHelper.getBillList();
+//        for (NuBillContract bill : nuBillContracts) {
+//            NuSummaryContract nuSummaryContract = dbHelper.getSummaryContractFromBill(bill.getId());
+//            NuLinksContract nuLinksContract = dbHelper.getLinksContractFromBill(bill.getId());
+//            List<NuLineItemsContract> nuLineItemsContracts = dbHelper.getLineItemsContractList(bill.getId());
+//        }
     }
 
 }

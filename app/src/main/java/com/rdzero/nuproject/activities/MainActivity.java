@@ -37,6 +37,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.rdzero.nuproject.R;
+import com.rdzero.nuproject.db.DbHelper;
 
 public class MainActivity extends FragmentActivity {
 
@@ -75,6 +76,7 @@ public class MainActivity extends FragmentActivity {
         // Set up the ViewPager, attaching the adapter.
         mViewPager = (ViewPager) findViewById(R.id.pager);
         mViewPager.setAdapter(mDemoCollectionPagerAdapter);
+
     }
 
     @Override

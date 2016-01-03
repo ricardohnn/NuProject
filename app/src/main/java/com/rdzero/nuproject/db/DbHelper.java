@@ -1,19 +1,13 @@
-package com.rdzero.nuproject.net;
+package com.rdzero.nuproject.db;
 
+import android.content.Context;
 import android.util.Log;
 
 import com.raizlabs.android.dbflow.sql.language.SQLite;
+import com.raizlabs.android.dbflow.sql.language.Where;
 import com.rdzero.nuproject.BuildConfig;
 import com.rdzero.nuproject.beans.NuBillObj;
 import com.rdzero.nuproject.beans.NuLineItemsObjBean;
-import com.rdzero.nuproject.db.NuBillContract;
-import com.rdzero.nuproject.db.NuBillContract_Table;
-import com.rdzero.nuproject.db.NuLineItemsContract;
-import com.rdzero.nuproject.db.NuLineItemsContract_Table;
-import com.rdzero.nuproject.db.NuLinksContract;
-import com.rdzero.nuproject.db.NuLinksContract_Table;
-import com.rdzero.nuproject.db.NuSummaryContract;
-import com.rdzero.nuproject.db.NuSummaryContract_Table;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -77,6 +71,22 @@ public class DbHelper {
             return false;
         }
         return true;
+    }
+
+    public boolean updateTable(){
+        // Native SQL wrapper
+        Where<NuBillContract> update = SQLite.update(NuBillContract.class)
+                .set(Ant_Table.type.eq("other"))
+                .where(Ant_Table.type.is("worker"))
+                .and(Ant_Table.isMale.is(true));
+        update.queryClose();
+
+// TransactionManager (more methods similar to this one)
+        TransactionManager.getInstance().addTransaction(new QueryTransaction(DBTransactionInfo.create(BaseTransaction.PRIORITY_UI), update);
+    }
+
+    public void dropTable(Context context){
+        context.getApplicationContext().deleteDatabase(NuProjDatabase.NAME + ".db");
     }
 
     public List<NuBillContract> getBillList(){
